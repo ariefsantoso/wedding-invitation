@@ -146,6 +146,7 @@
     background: var(--white); border: 1.5px solid #E4D8C6; color: var(--choco); transition: transform 0.3s, border-color 0.3s, color 0.3s; }
   .btn-ghost:hover { transform: translateY(-2px); border-color: var(--matcha); color: var(--matcha-deep); }
   .btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-alt { margin-top: 8px; padding: 9px 22px; font-size: 0.8rem; }
 
   /* progress slots */
   .slots { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
@@ -252,6 +253,8 @@
         <h3>Photobooth Siap</h3>
         <p>Klik tombol di bawah untuk mengaktifkan kamera. Izinkan akses kamera saat browser meminta.</p>
         <button class="btn-start" id="btnStart">Aktifkan Kamera</button>
+        <button class="btn-ghost btn-alt" id="btnFileAlt">📁 Ambil dari Kamera/Galeri</button>
+        <input type="file" id="fileInput" accept="image/*" capture="user" hidden>
         <p class="err-msg" id="camError"></p>
       </div>
     </div>
@@ -294,7 +297,7 @@
     </div>
 
     <div class="foot-note">
-      💡 Kamera hanya aktif selama photobooth berjalan dan otomatis mati setelah 3 foto diambil. Pastikan izin kamera di browser diizinkan. Foto hanya diproses di perangkat kamu — tidak diunggah ke mana pun.
+      💡 Akses kamera langsung hanya berfungsi lewat <b>HTTPS</b>. Kalau halaman dibuka lewat HTTP biasa, gunakan tombol <b>📁 Ambil dari Kamera/Galeri</b> — ini membuka kamera bawaan HP. Foto hanya diproses di perangkat kamu — tidak diunggah ke mana pun.
     </div>
   </div>
 </main>
@@ -324,6 +327,8 @@ const video = document.getElementById('video');
 const camStage = document.getElementById('camStage');
 const startOverlay = document.getElementById('startOverlay');
 const btnStart = document.getElementById('btnStart');
+const btnFileAlt = document.getElementById('btnFileAlt');
+const fileInput = document.getElementById('fileInput');
 const btnShoot = document.getElementById('btnShoot');
 const btnRestart = document.getElementById('btnRestart');
 const controls = document.getElementById('controls');
@@ -362,8 +367,20 @@ function beep(freq = 880, dur = 0.12, vol = 0.25) {
 }
 
 /* ================= KAMERA ================= */
+/* Browser hanya mengizinkan getUserMedia di koneksi aman (https / localhost).
+   Kalau halaman dibuka lewat HTTP biasa atau file://, kamera preview tidak bisa jalan. */
+const insecure = !window.isSecureContext;
+
 async function startCamera() {
   camError.textContent = '';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    camError.textContent = '⚠️ Browser kamu tidak mendukung akses kamera. Gunakan tombol "Ambil dari Kamera/Galeri" di bawah.';
+    return false;
+  }
+  if (insecure) {
+    camError.textContent = '⚠️ Halaman ini dibuka lewat HTTP, jadi browser memblokir akses kamera. Gunakan tombol "Ambil dari Kamera/Galeri" di bawah, atau buka via HTTPS.';
+    return false;
+  }
   try {
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false });
     video.srcObject = stream;
@@ -373,7 +390,15 @@ async function startCamera() {
     statusEl.textContent = 'Siap! Tekan tombol tengah untuk mengambil foto 📸';
     return true;
   } catch (err) {
-    camError.textContent = '⚠️ Kamera tidak dapat diakses. Periksa izin kamera di browser lalu coba lagi.';
+    let msg = '⚠️ Kamera tidak dapat diakses.';
+    if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+      msg = '⚠️ Izin kamera ditolak. Izinkan akses kamera di pengaturan browser, atau gunakan tombol "Ambil dari Kamera/Galeri".';
+    } else if (err && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError')) {
+      msg = '⚠️ Kamera tidak ditemukan di perangkat ini. Gunakan tombol "Ambil dari Kamera/Galeri".';
+    } else if (err && err.name === 'NotReadableError') {
+      msg = '⚠️ Kamera sedang dipakai aplikasi lain. Tutup aplikasi kamera lain lalu coba lagi.';
+    }
+    camError.textContent = msg;
     return false;
   }
 }
@@ -383,6 +408,46 @@ function stopCamera() {
 }
 
 /* ================= CAPTURE ================= */
+/* Fallback: ambil foto lewat input file (kamera/galeri bawaan HP).
+   Ini tetap berfungsi walau halaman dibuka lewat HTTP/file://. */
+function handleFileShot(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    camError.textContent = '⚠️ Pilih file gambar yang valid.';
+    return;
+  }
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const vw = img.naturalWidth;
+    const vh = img.naturalHeight;
+    const targetRatio = SHOT_W / SHOT_H;
+    let sx, sy, sw, sh;
+    const vRatio = vw / vh;
+    if (vRatio > targetRatio) {
+      sh = vh; sw = vh * targetRatio; sx = (vw - sw) / 2; sy = 0;
+    } else {
+      sw = vw; sh = vw / targetRatio; sx = 0; sy = (vh - sh) / 2;
+    }
+    const c = document.createElement('canvas');
+    c.width = SHOT_W; c.height = SHOT_H;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, SHOT_W, SHOT_H);
+    URL.revokeObjectURL(url);
+    shots.push(c);
+    updateSlots();
+    if (shots.length >= MAX_SHOTS) {
+      finishBooth();
+    } else {
+      statusEl.textContent = `Foto ${shots.length} dari ${MAX_SHOTS} berhasil! Ambil foto berikutnya. 📸`;
+    }
+  };
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+    camError.textContent = '⚠️ Gagal membaca gambar. Coba foto lain.';
+  };
+  img.src = url;
+}
+
 function captureShot() {
   const vw = video.videoWidth || 1280;
   const vh = video.videoHeight || 960;
@@ -596,12 +661,22 @@ function resetBooth() {
   statusEl.textContent = 'Klik tombol untuk memulai photobooth 📸';
   startOverlay.style.display = 'flex';
   controls.style.display = 'none';
+  camError.textContent = '';
 }
 
 /* ================= EVENT ================= */
 btnStart.addEventListener('click', async () => {
   const ok = await startCamera();
   if (ok) btnRestart.disabled = false;
+});
+
+/* fallback kamera/galeri: tombol membuka file picker, hasilnya dipakai sebagai foto */
+btnFileAlt.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => {
+  if (fileInput.files && fileInput.files[0]) {
+    handleFileShot(fileInput.files[0]);
+    fileInput.value = '';
+  }
 });
 
 btnShoot.addEventListener('click', doShoot);
