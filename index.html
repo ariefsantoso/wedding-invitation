@@ -35,7 +35,7 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
 
   body {
     font-family: 'Poppins', sans-serif;
@@ -57,7 +57,10 @@
 
   /* ============ SPLASH SCREEN ============ */
   #splash {
-    position: fixed; inset: 0; z-index: 1000;
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 100vh; /* fallback */
+    height: 100dvh; /* ikut tinggi layar yang terlihat di mobile */
+    z-index: 1000;
     background:
       radial-gradient(circle at 20% 25%, rgba(228, 87, 91, 0.18), transparent 40%),
       radial-gradient(circle at 80% 75%, rgba(138, 154, 91, 0.25), transparent 45%),
@@ -68,7 +71,7 @@
     overflow-y: auto; padding: 18px 14px;
     transition: opacity 0.7s ease, visibility 0.7s ease, transform 0.7s ease;
   }
-  .splash-inner { margin: auto; }
+  .splash-inner { margin: auto; max-width: 100%; }
   #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: scale(1.05); }
   .splash-inner { animation: splashIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
   @keyframes splashIn { from { opacity: 0; transform: translateY(30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
@@ -92,6 +95,18 @@
   .splash-btn { margin-top: 16px; }
   .envelope { position: relative; width: 260px; height: 190px; margin: 18px auto 10px; perspective: 900px; cursor: pointer; }
   @media (max-width: 480px) { .envelope { transform: scale(0.8); } }
+  /* kompak-kan splash di layar pendek (mobile) supaya muat tanpa scroll */
+  @media (max-height: 700px) and (max-width: 560px) {
+    #splash { padding: 10px 12px; gap: 4px; }
+    .splash-floral { font-size: 1.5rem; }
+    .splash-names { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+    .splash-date { font-size: 1.15rem; }
+    .splash-sub { font-size: 0.68rem; letter-spacing: 3px; }
+    .splash-divider { font-size: 0.8rem; margin: 2px 0; }
+    .envelope { transform: scale(0.58); margin: 8px auto 6px; }
+    .splash-guest { font-size: 0.78rem; margin-top: 0; }
+    .splash-btn { margin-top: 8px; font-size: 0.82rem; padding: 11px 22px; }
+  }
   .env-body {
     position: absolute; inset: 0; border-radius: 16px;
     background: linear-gradient(160deg, var(--strawberry-bright), var(--strawberry-deep));
@@ -183,6 +198,7 @@
   .cover {
     position: relative;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex; align-items: center; justify-content: center;
     text-align: center; overflow: hidden;
     background:
