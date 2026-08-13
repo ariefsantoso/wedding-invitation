@@ -641,12 +641,24 @@
     .story-item:nth-child(even) .story-step { left: 16px; }
   }
 
+  @media (max-width: 560px) {
+    .quote-arab { font-size: 1.3rem; line-height: 1.9; }
+    .quote-latin { font-size: 0.78rem; }
+    .quote-trans { font-size: 0.82rem; }
+    .quote-card { padding: 30px 20px 28px; }
+    .quote-card::before, .quote-card::after { font-size: 2rem; }
+    .section-sub { font-size: 0.82rem; }
+  }
+
   @media (max-width: 360px) {
     .cover h1 { font-size: clamp(2rem, 8.5vw, 5.8rem); }
     .avatar-frame { width: 160px; height: 160px; }
     .avatar-emoji { font-size: 62px; }
     .countdown-grid { gap: 8px; }
     .scroll-hint { display: none; }
+    .quote-arab { font-size: 1.1rem; line-height: 1.8; }
+    .quote-trans { font-size: 0.76rem; }
+    .section-sub { font-size: 0.76rem; }
   }
 </style>
 </head>
