@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bagikan Undangan — Arief & Shahana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --matcha: #8A9A5B;
+    --matcha-dark: #5F7040;
+    --matcha-deep: #46542E;
+    --matcha-light: #E4EAD3;
+    --matcha-mist: #F2F5E9;
+    --strawberry: #E4575B;
+    --strawberry-deep: #C43A44;
+    --strawberry-bright: #F2707A;
+    --strawberry-light: #FCE6E7;
+    --strawberry-mist: #FDF1F1;
+    --cream: #FBF7EE;
+    --cream-deep: #F5EDDC;
+    --choco: #3A2E2A;
+    --choco-soft: #7A6A63;
+    --white: #FFFFFF;
+    --gold: #C9A227;
+    --shadow: 0 20px 50px rgba(58, 46, 42, 0.12);
+    --shadow-strong: 0 30px 70px rgba(58, 46, 42, 0.22);
+    --grad-straw: linear-gradient(135deg, var(--strawberry) 0%, var(--strawberry-deep) 100%);
+    --grad-matcha: linear-gradient(135deg, var(--matcha) 0%, var(--matcha-deep) 100%);
+    --grad-wa: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--cream);
+    color: var(--choco);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  ::selection { background: var(--strawberry); color: #fff; }
+
+  .script { font-family: 'Great Vibes', cursive; }
+  .serif { font-family: 'Playfair Display', serif; }
+
+  /* ============ BACKGROUND ============ */
+  .bg {
+    position: fixed; inset: 0; z-index: -1; overflow: hidden;
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(228, 87, 91, 0.12), transparent 45%),
+      radial-gradient(ellipse at 85% 80%, rgba(138, 154, 91, 0.16), transparent 45%),
+      linear-gradient(170deg, var(--cream-deep) 0%, var(--cream) 100%);
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; animation: drift 14s ease-in-out infinite alternate; }
+  .blob.a { width: 360px; height: 360px; background: var(--strawberry-light); top: -80px; left: -100px; }
+  .blob.b { width: 320px; height: 320px; background: var(--matcha-light); bottom: -70px; right: -90px; animation-delay: 3s; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(35px,-35px) scale(1.18); } }
+  .petal {
+    position: absolute; top: -40px; border-radius: 60% 40% 60% 40%; opacity: 0.6;
+    animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-40px) translateX(0) rotate(0deg); }
+    25%  { transform: translateY(25vh) translateX(40px) rotate(130deg); }
+    50%  { transform: translateY(50vh) translateX(-30px) rotate(260deg); }
+    75%  { transform: translateY(75vh) translateX(25px) rotate(390deg); }
+    100% { transform: translateY(108vh) translateX(-15px) rotate(520deg); }
+  }
+
+  /* ============ HEADER ============ */
+  header {
+    padding: 22px 26px 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; font-family: 'Great Vibes', cursive; font-size: 1.7rem; color: var(--strawberry-deep); text-decoration: none; }
+  .brand i { font-style: normal; animation: sway 4s ease-in-out infinite; display: inline-block; }
+  @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+    font-size: 0.82rem; font-weight: 500; color: var(--choco);
+    background: var(--white); border: 1.5px solid #E4D8C6; border-radius: 50px;
+    padding: 8px 18px; transition: transform 0.3s, border-color 0.3s, color 0.3s;
+  }
+  .back-link:hover { transform: translateY(-2px); border-color: var(--strawberry); color: var(--strawberry-deep); }
+
+  /* ============ LAYOUT ============ */
+  main { padding: 40px 20px 80px; max-width: 780px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero { text-align: center; margin-bottom: 36px; }
+  .hero-tag { font-size: 0.78rem; letter-spacing: 4px; text-transform: uppercase; color: var(--strawberry); font-weight: 500; }
+  .hero h1 { font-family: 'Great Vibes', cursive; font-size: clamp(2.6rem, 8vw, 3.6rem); color: var(--choco); margin: 6px 0 8px; }
+  .hero p { font-size: 0.92rem; color: var(--choco-soft); max-width: 480px; margin: 0 auto; }
+
+  .card {
+    background: var(--white); border-radius: 28px; padding: 38px 32px;
+    box-shadow: var(--shadow); position: relative; overflow: hidden;
+    animation: cardIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--strawberry), var(--gold), var(--matcha)); }
+
+  .step-title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 1.02rem; margin-bottom: 8px; }
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: var(--grad-straw); color: #fff; font-size: 0.9rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(228,87,91,0.35);
+  }
+  .step-num.green { background: var(--grad-matcha); box-shadow: 0 6px 16px rgba(138,154,91,0.35); }
+  .step-sub { font-size: 0.84rem; color: var(--choco-soft); margin-bottom: 20px; }
+
+  form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 26px; }
+  .field label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--choco); margin-bottom: 6px; }
+  .field input {
+    width: 100%; padding: 14px 18px; border-radius: 16px; border: 1.5px solid #E4D8C6;
+    background: var(--cream); font-family: inherit; font-size: 0.95rem; color: var(--choco);
+    outline: none; transition: border 0.3s, box-shadow 0.3s, transform 0.3s;
+  }
+  .field input:focus { border-color: var(--strawberry); box-shadow: 0 0 0 5px rgba(228,87,91,0.14); transform: translateY(-2px); }
+  .field input::placeholder { color: #B3A69B; }
+
+  .actions { display: flex; flex-direction: column; gap: 12px; }
+  .btn-wa {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 15px 24px; border: none; border-radius: 50px; cursor: pointer;
+    background: var(--grad-wa); color: #fff; font-family: inherit; font-size: 1rem; font-weight: 500;
+    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; overflow: hidden;
+  }
+  .btn-wa::after {
+    content: ""; position: absolute; top: 0; left: -80%; width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation: shine 3.4s ease-in-out infinite;
+  }
+  @keyframes shine { 0% { left: -80%; } 55%, 100% { left: 130%; } }
+  .btn-wa:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 40px rgba(37, 211, 102, 0.5); }
+  .btn-wa:active { transform: scale(0.97); }
+  .btn-wa:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .btn-copy {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px 24px; border-radius: 50px; cursor: pointer;
+    background: var(--white); border: 1.5px solid #E4D8C6; color: var(--choco);
+    font-family: inherit; font-size: 0.92rem; font-weight: 500;
+    transition: transform 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
+  }
+  .btn-copy:hover { transform: translateY(-2px); border-color: var(--matcha); color: var(--matcha-deep); box-shadow: 0 10px 24px rgba(138,154,91,0.2); }
+
+  .hint { text-align: center; font-size: 0.78rem; color: #9A8B82; margin-top: 16px; }
+
+  /* ============ PREVIEW ============ */
+  .preview-title { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1rem; margin: 30px 0 14px; flex-wrap: wrap; }
+  .preview-title .icon { font-size: 1.3rem; animation: sway 4s ease-in-out infinite; display: inline-block; }
+  .edit-badge {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.5px; color: var(--strawberry-deep);
+    background: var(--strawberry-light); padding: 4px 12px; border-radius: 50px;
+  }
+  .btn-reset {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 5px;
+    padding: 7px 16px; border-radius: 50px; cursor: pointer; font-family: inherit;
+    background: var(--white); border: 1.5px solid #E4D8C6; color: var(--choco-soft);
+    font-size: 0.78rem; font-weight: 500; transition: transform 0.3s, border-color 0.3s, color 0.3s;
+  }
+  .btn-reset:hover { transform: translateY(-2px); border-color: var(--matcha); color: var(--matcha-deep); }
+  .preview {
+    width: 100%; resize: vertical; min-height: 260px; max-height: 420px;
+    background: var(--matcha-mist); border: 1.5px dashed rgba(138,154,91,0.45);
+    border-radius: 20px; padding: 22px; font-size: 0.85rem; line-height: 1.75;
+    color: var(--choco); font-family: 'Poppins', sans-serif;
+    outline: none; transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+  }
+  .preview:focus { border-color: var(--strawberry); border-style: solid; background: var(--white); box-shadow: 0 0 0 5px rgba(228,87,91,0.1); }
+
+  .foot-note {
+    text-align: center; font-size: 0.8rem; color: var(--choco-soft);
+    margin-top: 34px; padding: 16px 20px; background: rgba(255,255,255,0.6);
+    border-radius: 16px; border: 1px solid #EDE3D2;
+  }
+  .foot-note a { color: var(--strawberry-deep); font-weight: 500; }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--choco); color: var(--cream); padding: 12px 26px; border-radius: 50px;
+    font-size: 0.85rem; z-index: 300; opacity: 0; pointer-events: none;
+    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease;
+    box-shadow: 0 14px 34px rgba(58,46,42,0.3);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media (max-width: 560px) {
+    header { padding: 18px 16px 0; }
+    main { padding: 30px 14px 60px; }
+    .card { padding: 26px 18px; }
+    .back-link span.txt { display: none; }
+    .btn-wa, .btn-copy { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- background -->
+<div class="bg">
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <a class="brand" href="index.html"><i>🍓</i> A&S</a>
+  <a class="back-link" href="index.html">← <span class="txt">Lihat Undangan</span></a>
+</header>
+
+<!-- ============ MAIN ============ -->
+<main>
+  <div class="hero">
+    <p class="hero-tag">Bagikan Undangan</p>
+    <h1>Undang Tamu via WhatsApp</h1>
+    <p>Masukkan nama tamu yang ingin diundang, lalu kirim undangan lengkap langsung melalui WhatsApp.</p>
+  </div>
+
+  <div class="card">
+    <div class="step-title">
+      <span class="step-num">1</span>
+      <span>Masukkan Nama Tamu</span>
+    </div>
+    <p class="step-sub">Nama ini akan muncul di dalam pesan undangan yang dikirim.</p>
+
+    <form id="shareForm">
+      <div class="field">
+        <label for="guestName">Nama Tamu yang Diundang *</label>
+        <input type="text" id="guestName" placeholder="Contoh: Bapak/Ibu Ahmad Hidayat" autocomplete="name" required>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="btn-wa" id="btnSend">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Kirim Undangan via WhatsApp
+        </button>
+        <button type="button" class="btn-copy" id="btnCopy">📋 Salin Pesan Undangan</button>
+      </div>
+      <p class="hint">* Setelah diklik, WhatsApp akan terbuka dan kamu tinggal memilih kontak yang akan dikirim.</p>
+    </form>
+
+    <div class="preview-title">
+      <span class="icon">💬</span> Pratinjau Pesan
+      <span class="edit-badge">✏️ Bisa diedit</span>
+      <button type="button" class="btn-reset" id="btnReset" title="Kembalikan ke template awal">↺ Reset</button>
+    </div>
+    <textarea class="preview" id="preview" spellcheck="false" aria-label="Pesan undangan yang bisa diedit"></textarea>
+
+    <div class="foot-note">
+      💡 Jika dibuka langsung dari komputer (file lokal), link undangan di pesan hanya bisa dibuka di perangkat yang sama. Setelah website ini di-hosting, link otomatis menyesuaikan alamat web-nya.
+    </div>
+  </div>
+</main>
+
+<!-- toast -->
+<div class="toast" id="toast">Pesan undangan berhasil disalin! 📋</div>
+
+<script>
+/* ================= PETALS ================= */
+const bgEl = document.querySelector('.bg');
+const petalColors = ['#E4575B', '#F08A8C', '#F7C4C5', '#C8D6A0', '#8A9A5B', '#F4C7A5'];
+for (let i = 0; i < 18; i++) {
+  const p = document.createElement('span');
+  p.className = 'petal';
+  const size = 9 + Math.random() * 13;
+  p.style.width = size + 'px';
+  p.style.height = size * 1.2 + 'px';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.background = petalColors[Math.floor(Math.random() * petalColors.length)];
+  p.style.animationDuration = (10 + Math.random() * 10) + 's';
+  p.style.animationDelay = (Math.random() * 12) + 's';
+  bgEl.appendChild(p);
+}
+
+/* ================= TEMPLATE PESAN ================= */
+function buildLink(nama) {
+  let base = window.location.href.split('#')[0].split('?')[0];
+  base = base.replace(/share\.html$/, 'index.html');
+  if (!/index\.html$/.test(base)) {
+    const path = base.split('/');
+    path[path.length - 1] = 'index.html';
+    base = path.join('/');
+  }
+  return base + '?to=' + encodeURIComponent(nama);
+}
+
+function buildMessage(nama) {
+  const link = buildLink(nama);
+  return `Assalamu'alaikum Warahmatullahi Wabarakatuh 🌸
+
+Kepada Yth.
+Bapak/Ibu/Saudara/i *${nama}*
+di tempat
+
+*Undangan Pernikahan*
+*Arief Santoso & Shahana Laili Nuronniyah*
+
+*Sabtu, 7 November 2026*
+Dusun Jetak, Desa Sidokerto
+Kecamatan Mojowarno, Kabupaten Jombang
+
+Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kedua mempelai.
+
+Untuk melihat undangan lengkap, silakan buka link berikut:
+${link}
+
+Wassalamu'alaikum Warahmatullahi Wabarakatuh 🙏
+Kami yang berbahagia,
+Keluarga Besar Kedua Mempelai`;
+}
+
+/* ================= PREVIEW (EDITABLE) ================= */
+const guestInput = document.getElementById('guestName');
+const preview = document.getElementById('preview');
+const btnSend = document.getElementById('btnSend');
+const btnCopy = document.getElementById('btnCopy');
+const btnReset = document.getElementById('btnReset');
+const form = document.getElementById('shareForm');
+const toast = document.getElementById('toast');
+
+let lastTemplate = '';          // template terakhir yang digenerate
+let userEdited = false;         // apakah pengguna sudah mengedit preview manual
+
+function fillPreview(msg) {
+  preview.value = msg;
+  lastTemplate = msg;
+  userEdited = false;
+}
+
+function renderPreview() {
+  const nama = guestInput.value.trim() || 'Bapak/Ibu Tamu Undangan';
+  const msg = buildMessage(nama);
+  if (!userEdited) {
+    fillPreview(msg);
+  }
+  return preview.value;
+}
+
+guestInput.addEventListener('input', () => {
+  if (!userEdited) fillPreview(buildMessage(guestInput.value.trim() || 'Bapak/Ibu Tamu Undangan'));
+});
+preview.addEventListener('input', () => { userEdited = true; });
+btnReset.addEventListener('click', () => {
+  fillPreview(buildMessage(guestInput.value.trim() || 'Bapak/Ibu Tamu Undangan'));
+  showToast('Pesan dikembalikan ke template awal ↺');
+});
+renderPreview();
+
+/* ================= KIRIM VIA WA ================= */
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nama = guestInput.value.trim();
+  if (!nama) {
+    showToast('⚠️ Mohon isi nama tamu terlebih dahulu.');
+    guestInput.focus();
+    return;
+  }
+  const msg = preview.value.trim();
+  if (!msg) {
+    showToast('⚠️ Pesan undangan masih kosong.');
+    preview.focus();
+    return;
+  }
+  const url = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  btnSend.disabled = true;
+  const original = btnSend.innerHTML;
+  btnSend.innerHTML = 'Membuka WhatsApp...';
+  window.open(url, '_blank');
+  setTimeout(() => {
+    btnSend.disabled = false;
+    btnSend.innerHTML = original;
+  }, 2500);
+});
+
+/* ================= SALIN PESAN ================= */
+btnCopy.addEventListener('click', async () => {
+  const nama = guestInput.value.trim();
+  if (!nama) {
+    showToast('⚠️ Mohon isi nama tamu terlebih dahulu.');
+    guestInput.focus();
+    return;
+  }
+  const msg = preview.value.trim();
+  if (!msg) {
+    showToast('⚠️ Pesan undangan masih kosong.');
+    preview.focus();
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(msg);
+    showToast('Pesan undangan berhasil disalin! 📋');
+  } catch (err) {
+    const ta = document.createElement('textarea');
+    ta.value = msg;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Pesan undangan berhasil disalin! 📋');
+  }
+});
+
+/* ================= TOAST ================= */
+let toastTimer = null;
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>

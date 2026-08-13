@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photobooth — Arief & Shahana</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --matcha: #8A9A5B;
+    --matcha-dark: #5F7040;
+    --matcha-deep: #46542E;
+    --matcha-light: #E4EAD3;
+    --matcha-mist: #F2F5E9;
+    --strawberry: #E4575B;
+    --strawberry-deep: #C43A44;
+    --strawberry-bright: #F2707A;
+    --strawberry-light: #FCE6E7;
+    --cream: #FBF7EE;
+    --cream-deep: #F5EDDC;
+    --choco: #3A2E2A;
+    --choco-soft: #7A6A63;
+    --white: #FFFFFF;
+    --gold: #C9A227;
+    --shadow: 0 20px 50px rgba(58, 46, 42, 0.12);
+    --shadow-strong: 0 30px 70px rgba(58, 46, 42, 0.22);
+    --grad-straw: linear-gradient(135deg, var(--strawberry) 0%, var(--strawberry-deep) 100%);
+    --grad-matcha: linear-gradient(135deg, var(--matcha) 0%, var(--matcha-deep) 100%);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--cream);
+    color: var(--choco);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+  ::selection { background: var(--strawberry); color: #fff; }
+  .script { font-family: 'Great Vibes', cursive; }
+
+  /* ============ BACKGROUND ============ */
+  .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden;
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(228, 87, 91, 0.12), transparent 45%),
+      radial-gradient(ellipse at 85% 80%, rgba(138, 154, 91, 0.16), transparent 45%),
+      linear-gradient(170deg, var(--cream-deep) 0%, var(--cream) 100%);
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; animation: drift 14s ease-in-out infinite alternate; }
+  .blob.a { width: 360px; height: 360px; background: var(--strawberry-light); top: -80px; left: -100px; }
+  .blob.b { width: 320px; height: 320px; background: var(--matcha-light); bottom: -70px; right: -90px; animation-delay: 3s; }
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(35px,-35px) scale(1.18); } }
+  .petal { position: absolute; top: -40px; border-radius: 60% 40% 60% 40%; opacity: 0.6;
+    animation-name: fall; animation-timing-function: linear; animation-iteration-count: infinite; }
+  @keyframes fall {
+    0%   { transform: translateY(-40px) translateX(0) rotate(0deg); }
+    25%  { transform: translateY(25vh) translateX(40px) rotate(130deg); }
+    50%  { transform: translateY(50vh) translateX(-30px) rotate(260deg); }
+    75%  { transform: translateY(75vh) translateX(25px) rotate(390deg); }
+    100% { transform: translateY(108vh) translateX(-15px) rotate(520deg); }
+  }
+
+  /* ============ HEADER ============ */
+  header { padding: 22px 26px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-family: 'Great Vibes', cursive; font-size: 1.7rem; color: var(--strawberry-deep); text-decoration: none; }
+  .brand i { font-style: normal; animation: sway 4s ease-in-out infinite; display: inline-block; }
+  @keyframes sway { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-size: 0.82rem; font-weight: 500;
+    color: var(--choco); background: var(--white); border: 1.5px solid #E4D8C6; border-radius: 50px; padding: 8px 18px;
+    transition: transform 0.3s, border-color 0.3s, color 0.3s; }
+  .back-link:hover { transform: translateY(-2px); border-color: var(--strawberry); color: var(--strawberry-deep); }
+
+  /* ============ LAYOUT ============ */
+  main { padding: 30px 20px 80px; max-width: 720px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero { text-align: center; margin-bottom: 28px; }
+  .hero-tag { font-size: 0.78rem; letter-spacing: 4px; text-transform: uppercase; color: var(--strawberry); font-weight: 500; }
+  .hero h1 { font-family: 'Great Vibes', cursive; font-size: clamp(2.4rem, 8vw, 3.4rem); color: var(--choco); margin: 4px 0 6px; }
+  .hero p { font-size: 0.9rem; color: var(--choco-soft); max-width: 480px; margin: 0 auto; }
+
+  .card { background: var(--white); border-radius: 28px; padding: 30px; box-shadow: var(--shadow);
+    position: relative; overflow: hidden; animation: cardIn 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(30px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--strawberry), var(--gold), var(--matcha)); }
+
+  /* ============ CAMERA ============ */
+  .cam-stage { position: relative; width: 100%; max-width: 420px; margin: 0 auto; border-radius: 22px; overflow: hidden;
+    aspect-ratio: 2/1; background: #1E1B18; box-shadow: var(--shadow-strong); }
+  .cam-stage video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: block; }
+
+  /* frame overlay di atas video */
+  .frame { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+  .frame .corner { position: absolute; width: 44px; height: 44px; border: 3px solid var(--gold); opacity: 0.9; }
+  .frame .c1 { top: 12px; left: 12px; border-right: none; border-bottom: none; border-top-left-radius: 14px; }
+  .frame .c2 { top: 12px; right: 12px; border-left: none; border-bottom: none; border-top-right-radius: 14px; }
+  .frame .c3 { bottom: 12px; left: 12px; border-right: none; border-top: none; border-bottom-left-radius: 14px; }
+  .frame .c4 { bottom: 12px; right: 12px; border-left: none; border-top: none; border-bottom-right-radius: 14px; }
+  .frame .frame-inner { position: absolute; inset: 12px; border: 1.5px dashed rgba(255,255,255,0.45); border-radius: 14px; }
+  .frame .cam-tag { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    background: rgba(58,46,42,0.72); color: var(--cream); font-size: 0.7rem; letter-spacing: 2px;
+    text-transform: uppercase; padding: 6px 16px; border-radius: 50px; backdrop-filter: blur(4px);
+    white-space: nowrap; }
+  .frame .cam-flower { position: absolute; font-size: 1.5rem; opacity: 0.85; }
+  .frame .f1 { top: 6px; left: 8px; }
+  .frame .f2 { top: 6px; right: 8px; }
+  .frame .f3 { bottom: 6px; left: 8px; }
+  .frame .f4 { bottom: 6px; right: 8px; }
+
+  /* countdown & flash */
+  .countdown-num { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; z-index: 5; pointer-events: none; }
+  .countdown-num.show { display: flex; }
+  .countdown-num span { font-family: 'Great Vibes', cursive; font-size: clamp(4.5rem, 28vw, 9rem); color: var(--cream);
+    text-shadow: 0 4px 24px rgba(58,46,42,0.55); animation: cdPop 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes cdPop { 0% { transform: scale(2.4); opacity: 0; } 40% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.9; } }
+  .flash-overlay { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 6; pointer-events: none; }
+  .flash-overlay.go { animation: flashGo 0.5s ease; }
+  @keyframes flashGo { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+  /* start overlay */
+  .start-overlay { position: absolute; inset: 0; z-index: 7; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 7px; text-align: center; padding: 8px; background: linear-gradient(160deg, rgba(70,84,46,0.85), rgba(196,58,68,0.85)); backdrop-filter: blur(4px); }
+  .start-overlay .cam-icon { font-size: 2.1rem; animation: sway 3s ease-in-out infinite; }
+  .start-overlay h3 { font-family: 'Great Vibes', cursive; font-size: 1.5rem; color: var(--cream); line-height: 1.2; }
+  .start-overlay p { font-size: 0.72rem; color: rgba(251,247,238,0.85); max-width: 250px; line-height: 1.5; }
+  .btn-start { margin-top: 2px; padding: 10px 30px; border: none; border-radius: 50px; cursor: pointer;
+    background: var(--grad-straw); color: #fff; font-family: inherit; font-size: 0.88rem; font-weight: 500;
+    box-shadow: 0 12px 30px rgba(228,87,91,0.45); transition: transform 0.3s, box-shadow 0.3s; }
+  .btn-start:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 16px 40px rgba(228,87,91,0.55); }
+  .btn-start:active { transform: scale(0.96); }
+  .start-overlay .err-msg { color: #FFD9DA; font-size: 0.7rem; }
+
+  /* ============ CONTROLS ============ */
+  .controls { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 22px; flex-wrap: wrap; }
+  .shoot-btn { position: relative; width: 74px; height: 74px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--cream); box-shadow: 0 8px 22px rgba(58,46,42,0.2); display: flex; align-items: center; justify-content: center; transition: transform 0.25s; }
+  .shoot-btn::before { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 3px solid var(--strawberry); opacity: 0.7; }
+  .shoot-btn .inner { width: 56px; height: 56px; border-radius: 50%; background: var(--grad-straw); }
+  .shoot-btn:hover { transform: scale(1.08); }
+  .shoot-btn:active { transform: scale(0.94); }
+  .shoot-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+  .btn-ghost { padding: 12px 26px; border-radius: 50px; cursor: pointer; font-family: inherit; font-size: 0.88rem; font-weight: 500;
+    background: var(--white); border: 1.5px solid #E4D8C6; color: var(--choco); transition: transform 0.3s, border-color 0.3s, color 0.3s; }
+  .btn-ghost:hover { transform: translateY(-2px); border-color: var(--matcha); color: var(--matcha-deep); }
+  .btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* progress slots */
+  .slots { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+  .slot { width: 46px; height: 46px; border-radius: 10px; border: 2px dashed #D8CBB8; background: var(--cream);
+    overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #C8BCA8; transition: all 0.3s; }
+  .slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .slot.filled { border-style: solid; border-color: var(--strawberry); animation: slotPop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes slotPop { from { transform: scale(0.5); } to { transform: scale(1); } }
+
+  .status { text-align: center; font-size: 0.82rem; color: var(--choco-soft); margin-top: 12px; min-height: 22px; }
+
+  /* ============ RESULT STRIP ============ */
+  .result { display: none; margin-top: 26px; text-align: center; }
+  .result.show { display: block; animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1); }
+  .result h3 { font-family: 'Great Vibes', cursive; font-size: 2.2rem; color: var(--strawberry-deep); }
+  .result-sub { font-size: 0.84rem; color: var(--choco-soft); margin-bottom: 18px; }
+  .strip-wrap { display: inline-block; background: var(--white); border-radius: 18px; padding: 12px; box-shadow: var(--shadow-strong);
+    transform: rotate(-1.5deg); transition: transform 0.4s; }
+  .strip-wrap:hover { transform: rotate(0) scale(1.02); }
+  .strip-wrap img { display: block; max-width: 100%; height: auto; border-radius: 10px; }
+  .result-actions { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .share-group { display: flex; justify-content: center; gap: 14px; flex-basis: 100%; flex-wrap: wrap; margin-top: 4px; }
+  .btn-download { display: inline-flex; align-items: center; gap: 9px; padding: 14px 32px; border: none; border-radius: 50px; cursor: pointer;
+    background: var(--grad-matcha); color: #fff; font-family: inherit; font-size: 0.95rem; font-weight: 500;
+    box-shadow: 0 12px 28px rgba(138,154,91,0.4); transition: transform 0.3s, box-shadow 0.3s; }
+  .btn-download:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgba(138,154,91,0.55); }
+  .btn-download:active { transform: scale(0.96); }
+  .btn-share { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 14px 30px; border: none; border-radius: 50px; cursor: pointer;
+    background: linear-gradient(135deg, #F58529 0%, #DD2A7B 50%, #8134AF 100%); color: #fff; font-family: inherit; font-size: 0.92rem; font-weight: 500;
+    box-shadow: 0 12px 28px rgba(221, 42, 123, 0.4); transition: transform 0.3s, box-shadow 0.3s; }
+  .btn-share:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgba(221, 42, 123, 0.55); }
+  .btn-share:active { transform: scale(0.96); }
+  .btn-share.wa { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); box-shadow: 0 12px 28px rgba(37, 211, 102, 0.4); }
+  .btn-share.wa:hover { box-shadow: 0 16px 38px rgba(37, 211, 102, 0.55); }
+  .btn-retake { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 14px 32px; border-radius: 50px; cursor: pointer;
+    background: var(--white); border: 1.5px solid #E4D8C6; color: var(--choco); font-family: inherit; font-size: 0.95rem; font-weight: 500;
+    transition: transform 0.3s, border-color 0.3s, color 0.3s; }
+  .btn-retake:hover { transform: translateY(-3px); border-color: var(--strawberry); color: var(--strawberry-deep); }
+
+  .foot-note { margin-top: 26px; text-align: center; font-size: 0.78rem; color: #9A8B82;
+    background: rgba(255,255,255,0.6); border: 1px solid #EDE3D2; border-radius: 14px; padding: 14px 18px; }
+
+  /* ============ TOAST ============ */
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--choco); color: var(--cream); padding: 13px 26px; border-radius: 50px;
+    font-size: 0.84rem; z-index: 400; opacity: 0; pointer-events: none; max-width: 90vw; text-align: center;
+    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.4s ease;
+    box-shadow: 0 14px 34px rgba(58,46,42,0.3); }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  @media (max-width: 560px) {
+    header { padding: 18px 16px 0; }
+    main { padding: 24px 12px 60px; }
+    .card { padding: 20px 14px; }
+    .back-link span.txt { display: none; }
+    .controls { gap: 12px; }
+    .result-actions { flex-direction: column; }
+    .share-group { flex-basis: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- background -->
+<div class="bg">
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <a class="brand" href="index.html"><i>🍓</i> A&S</a>
+  <a class="back-link" href="index.html">← <span class="txt">Lihat Undangan</span></a>
+</header>
+
+<!-- ============ MAIN ============ -->
+<main>
+  <div class="hero">
+    <p class="hero-tag">Virtual Photobooth</p>
+    <!-- <h1>Foto Strip Pernikahan</h1> -->
+    <p>Ambil 3 foto dengan kamera kamu, jadikan foto strip bertema <b>Arief & Shahana</b>, lalu unduh hasilnya!</p>
+  </div>
+
+  <div class="card">
+    <div class="cam-stage" id="camStage">
+      <video id="video" autoplay playsinline muted></video>
+
+      <!-- bingkai dekoratif -->
+      <div class="frame" id="frameOverlay">
+        <span class="cam-flower f1">🌸</span><span class="cam-flower f2">🍓</span>
+        <span class="cam-flower f3">🍵</span><span class="cam-flower f4">💚</span>
+        <div class="frame-inner"></div>
+        <div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
+        <div class="cam-tag">Arief & Shahana • 07.11.2026</div>
+      </div>
+
+      <div class="flash-overlay" id="flash"></div>
+
+      <div class="countdown-num" id="countdown"><span></span></div>
+
+      <!-- overlay awal -->
+      <div class="start-overlay" id="startOverlay">
+        <span class="cam-icon">📸</span>
+        <h3>Photobooth Siap</h3>
+        <p>Klik tombol di bawah untuk mengaktifkan kamera. Izinkan akses kamera saat browser meminta.</p>
+        <button class="btn-start" id="btnStart">Aktifkan Kamera</button>
+        <p class="err-msg" id="camError"></p>
+      </div>
+    </div>
+
+    <!-- kontrol -->
+    <div class="controls" id="controls" style="display:none;">
+      <button class="shoot-btn" id="btnShoot" title="Ambil foto" aria-label="Ambil foto"><span class="inner"></span></button>
+      <button class="btn-ghost" id="btnRestart" disabled>↺ Ulang Semua</button>
+    </div>
+
+    <div class="slots" id="slots">
+      <div class="slot">1</div><div class="slot">2</div><div class="slot">3</div>
+    </div>
+
+    <p class="status" id="status">Klik tombol untuk memulai photobooth 📸</p>
+
+    <!-- hasil -->
+    <div class="result" id="result">
+      <h3>Foto Strip Kamu! 🍓💚</h3>
+      <p class="result-sub">Simpan dan bagikan momen bahagia kamu. Foto otomatis dimuat ke galeri perangkat saat diunduh.</p>
+      <div class="strip-wrap"><img id="stripImg" alt="Foto strip pernikahan"></div>
+      <div class="result-actions">
+        <button class="btn-download" id="btnDownload">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          Unduh Foto Strip
+        </button>
+        <button class="btn-retake" id="btnRetake">📸 Ambil Lagi</button>
+
+        <div class="share-group">
+          <button class="btn-share" id="btnShareIg">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            Share Instagram Story
+          </button>
+          <button class="btn-share wa" id="btnShareWa">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Share WA Story
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="foot-note">
+      💡 Kamera hanya aktif selama photobooth berjalan dan otomatis mati setelah 3 foto diambil. Pastikan izin kamera di browser diizinkan. Foto hanya diproses di perangkat kamu — tidak diunggah ke mana pun.
+    </div>
+  </div>
+</main>
+
+<!-- toast -->
+<div class="toast" id="toast">Pesan disalin 📋</div>
+
+<script>
+/* ================= PETALS ================= */
+const bgEl = document.querySelector('.bg');
+const petalColors = ['#E4575B', '#F08A8C', '#F7C4C5', '#C8D6A0', '#8A9A5B', '#F4C7A5'];
+for (let i = 0; i < 16; i++) {
+  const p = document.createElement('span');
+  p.className = 'petal';
+  const size = 9 + Math.random() * 13;
+  p.style.width = size + 'px';
+  p.style.height = size * 1.2 + 'px';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.background = petalColors[Math.floor(Math.random() * petalColors.length)];
+  p.style.animationDuration = (10 + Math.random() * 10) + 's';
+  p.style.animationDelay = (Math.random() * 12) + 's';
+  bgEl.appendChild(p);
+}
+
+/* ================= ELEMEN ================= */
+const video = document.getElementById('video');
+const camStage = document.getElementById('camStage');
+const startOverlay = document.getElementById('startOverlay');
+const btnStart = document.getElementById('btnStart');
+const btnShoot = document.getElementById('btnShoot');
+const btnRestart = document.getElementById('btnRestart');
+const controls = document.getElementById('controls');
+const slots = document.querySelectorAll('.slot');
+const statusEl = document.getElementById('status');
+const countdownEl = document.getElementById('countdown');
+const countdownSpan = countdownEl.querySelector('span');
+const flashEl = document.getElementById('flash');
+const camError = document.getElementById('camError');
+const result = document.getElementById('result');
+const stripImg = document.getElementById('stripImg');
+const btnDownload = document.getElementById('btnDownload');
+const btnRetake = document.getElementById('btnRetake');
+
+let stream = null;
+let shots = [];           // array of canvas (hasil capture)
+let shooting = false;
+const MAX_SHOTS = 3;
+const SHOT_W = 1080, SHOT_H = 540; // rasio 2:1 (foto full-width di strip)
+
+/* ================= AUDIO BEEP ================= */
+let audioCtx = null;
+function beep(freq = 880, dur = 0.12, vol = 0.25) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(vol, audioCtx.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+
+/* ================= KAMERA ================= */
+async function startCamera() {
+  camError.textContent = '';
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false });
+    video.srcObject = stream;
+    await video.play().catch(() => {});
+    startOverlay.style.display = 'none';
+    controls.style.display = 'flex';
+    statusEl.textContent = 'Siap! Tekan tombol tengah untuk mengambil foto 📸';
+    return true;
+  } catch (err) {
+    camError.textContent = '⚠️ Kamera tidak dapat diakses. Periksa izin kamera di browser lalu coba lagi.';
+    return false;
+  }
+}
+
+function stopCamera() {
+  if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+}
+
+/* ================= CAPTURE ================= */
+function captureShot() {
+  const vw = video.videoWidth || 1280;
+  const vh = video.videoHeight || 960;
+  const targetRatio = SHOT_W / SHOT_H;
+  let sx, sy, sw, sh;
+  const vRatio = vw / vh;
+  if (vRatio > targetRatio) {
+    sh = vh; sw = vh * targetRatio; sx = (vw - sw) / 2; sy = 0;
+  } else {
+    sw = vw; sh = vw / targetRatio; sx = 0; sy = (vh - sh) / 2;
+  }
+  const c = document.createElement('canvas');
+  c.width = SHOT_W; c.height = SHOT_H;
+  const ctx = c.getContext('2d');
+  ctx.save();
+  ctx.translate(SHOT_W, 0); ctx.scale(-1, 1); // mirror agar sama dengan preview
+  ctx.drawImage(video, sx, sy, sw, sh, 0, 0, SHOT_W, SHOT_H);
+  ctx.restore();
+  return c;
+}
+
+/* ================= COUNTDOWN & SHOOT ================= */
+function showCountdown(n) {
+  countdownSpan.textContent = n;
+  countdownEl.classList.add('show');
+}
+function hideCountdown() {
+  countdownEl.classList.remove('show');
+}
+
+function doShoot() {
+  if (shooting || shots.length >= MAX_SHOTS) return;
+  shooting = true;
+  btnShoot.disabled = true;
+  statusEl.textContent = 'Bersiap... lihat ke kamera! 😊';
+
+  const steps = [3, 2, 1];
+  let i = 0;
+  const tick = () => {
+    if (i < steps.length) {
+      showCountdown(steps[i]);
+      beep(660 + i * 40, 0.15);
+      i++;
+      setTimeout(tick, 800);
+    } else {
+      hideCountdown();
+      // flash
+      flashEl.classList.remove('go');
+      void flashEl.offsetWidth;
+      flashEl.classList.add('go');
+      beep(1200, 0.35, 0.35);
+      // capture
+      const shot = captureShot();
+      shots.push(shot);
+      updateSlots();
+      shooting = false;
+      if (shots.length >= MAX_SHOTS) {
+        finishBooth();
+      } else {
+        btnShoot.disabled = false;
+        statusEl.textContent = `Foto ${shots.length} dari ${MAX_SHOTS} berhasil! Tekan lagi untuk foto berikutnya. 📸`;
+      }
+    }
+  };
+  tick();
+}
+
+function updateSlots() {
+  shots.forEach((shot, idx) => {
+    const slot = slots[idx];
+    slot.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = shot.toDataURL('image/jpeg', 0.7);
+    slot.appendChild(img);
+    slot.classList.add('filled');
+  });
+}
+
+/* ================= SELESAI -> SUSUN STRIP ================= */
+async function finishBooth() {
+  stopCamera();
+  controls.style.display = 'none';
+  statusEl.textContent = 'Menyusun foto strip... ✨';
+  await document.fonts.ready;
+  const stripUrl = composeStrip();
+  stripImg.src = stripUrl;
+  result.classList.add('show');
+  statusEl.textContent = 'Selamat! Foto strip kamu sudah jadi 🥳';
+}
+
+function composeStrip() {
+  /* Ukuran Instagram Story: 1080 x 1920 (9:16) */
+  const W = 1080, H = 1920;
+
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d');
+
+  /* background cream gradient */
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+  bgGrad.addColorStop(0, '#FDF6EA');
+  bgGrad.addColorStop(0.5, '#FBF7EE');
+  bgGrad.addColorStop(1, '#F6EEDD');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  /* dekorasi bunga tersebar (alpha rendah) */
+  const decos = [
+    ['🌸', 56, 56, 40, 0.42], ['🍓', W - 64, 60, 36, 0.38], ['🍵', 52, H - 96, 38, 0.4],
+    ['💚', W - 60, H - 84, 40, 0.42], ['❀', W / 2 - 80, 50, 32, 0.3], ['✦', W / 2 + 84, 58, 28, 0.26]
+  ];
+  decos.forEach(([t, x, y, s, a]) => {
+    ctx.save();
+    ctx.globalAlpha = a;
+    ctx.font = s + 'px serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(t, x, y);
+    ctx.restore();
+  });
+
+  /* ====== foto polaroid ====== */
+  const pw = 720;                    // lebar foto
+  const ph = 360;                    // tinggi foto (rasio 2:1)
+  const border = 18;                 // bingkai putih polaroid
+  const capH = 30;                   // area bawah polaroid (tanpa teks)
+  const polW = pw + border * 2;
+  const polH = ph + border + capH + border;
+  const polGap = 28;
+  const totalPolH = polH * 3 + polGap * 2;
+  const topPad = 110;                // ruang dekorasi atas
+  const rots = [-2.5, 0, 2.5];       // rotasi khas polaroid
+
+  shots.forEach((shot, idx) => {
+    const py = topPad + idx * (polH + polGap);
+    const px = (W - polW) / 2;
+    ctx.save();
+    ctx.translate(px + polW / 2, py + polH / 2);
+    ctx.rotate(rots[idx] * Math.PI / 180);
+    ctx.translate(-(px + polW / 2), -(py + polH / 2));
+
+    /* bayangan polaroid */
+    ctx.save();
+    ctx.shadowColor = 'rgba(58,46,42,0.3)';
+    ctx.shadowBlur = 26;
+    ctx.shadowOffsetY = 10;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(px, py, polW, polH);
+    ctx.restore();
+
+    /* foto */
+    ctx.drawImage(shot, px + border, py + border, pw, ph);
+    ctx.restore();
+  });
+
+  /* ====== teks bawah ====== */
+  const textTop = topPad + totalPolH + 140;
+
+  /* "The Wedding Of" */
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#C9A227';
+  ctx.font = '600 30px Poppins, sans-serif';
+  ctx.fillText('The Wedding Of', W / 2, textTop - 84);
+  ctx.restore();
+
+  /* "Arief dan Shahana" — gradien + bayangan */
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(58,46,42,0.25)';
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 6;
+  ctx.font = '92px "Great Vibes", cursive';
+  const nameGrad = ctx.createLinearGradient(W / 2 - 340, 0, W / 2 + 340, 0);
+  nameGrad.addColorStop(0, '#C43A44');
+  nameGrad.addColorStop(0.5, '#C9A227');
+  nameGrad.addColorStop(1, '#5F7040');
+  ctx.fillStyle = nameGrad;
+  ctx.fillText('Arief dan Shahana', W / 2, textTop);
+  ctx.restore();
+
+  /* garis emas dekoratif */
+  ctx.save();
+  ctx.strokeStyle = 'rgba(201,162,39,0.6)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([12, 10]);
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 210, textTop + 56); ctx.lineTo(W / 2 + 210, textTop + 56);
+  ctx.stroke();
+  ctx.restore();
+
+  /* "Jombang, 7 Nov 2026" */
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#5F7040';
+  ctx.font = '600 36px Poppins, sans-serif';
+  ctx.fillText('Jombang, 7 Nov 2026', W / 2, textTop + 124);
+  ctx.restore();
+
+  return c.toDataURL('image/png');
+}
+
+/* ================= RESET / RETAK ================= */
+function resetBooth() {
+  shots = [];
+  stopCamera();
+  result.classList.remove('show');
+  slots.forEach(s => { s.classList.remove('filled'); s.innerHTML = s.textContent; });
+  statusEl.textContent = 'Klik tombol untuk memulai photobooth 📸';
+  startOverlay.style.display = 'flex';
+  controls.style.display = 'none';
+}
+
+/* ================= EVENT ================= */
+btnStart.addEventListener('click', async () => {
+  const ok = await startCamera();
+  if (ok) btnRestart.disabled = false;
+});
+
+btnShoot.addEventListener('click', doShoot);
+
+btnRestart.addEventListener('click', () => {
+  resetBooth();
+  startCamera();
+});
+
+btnRetake.addEventListener('click', () => {
+  resetBooth();
+  startCamera();
+});
+
+btnDownload.addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = stripImg.src;
+  a.download = 'photo-strip-arief-shahana-07-11-2026.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+});
+
+/* ================= SHARE KE INSTAGRAM STORY ================= */
+const btnShareIg = document.getElementById('btnShareIg');
+
+/* ================= TOAST ================= */
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+function showToast(text) {
+  toastEl.textContent = text;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+}
+
+btnShareIg.addEventListener('click', () => {
+  if (!stripImg.src) { showToast('Foto strip belum tersedia.'); return; }
+  /* Buka mode buat story Instagram; gambar sudah tersimpan via unduhan/klipboard.
+     Instagram tidak menerima gambar langsung dari URL browser. */
+  window.open('https://www.instagram.com/creating/stories/', '_blank');
+  showToast('💡 Simpan foto strip terlebih dahulu, lalu unggah ke Story Instagram kamu.');
+});
+
+/* ================= SHARE KE WHATSAPP STORY ================= */
+const btnShareWa = document.getElementById('btnShareWa');
+btnShareWa.addEventListener('click', () => {
+  if (!stripImg.src) { showToast('Foto strip belum tersedia.'); return; }
+  /* WhatsApp Story (status) juga tidak bisa menerima file langsung dari URL browser,
+     jadi buka status WA dan ingatkan menyimpan foto terlebih dahulu. */
+  window.open('https://api.whatsapp.com/send/?text=' + encodeURIComponent('Foto strip undangan Arief & Shahana 🍓💚 — lihat di photobooth kami!'), '_blank');
+  showToast('💡 Simpan foto strip terlebih dahulu, lalu unggah ke Status/Story WhatsApp kamu.');
+});
+</script>
+</body>
+</html>
