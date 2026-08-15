@@ -516,21 +516,25 @@
   .story-item.visible .story-dot { transform: scale(1); }
 
   /* ============ WISH / KOMENTAR ============ */
-  .wish-form { display: flex; gap: 10px; max-width: 580px; margin: 0 auto 32px; }
-  @media (max-width: 480px) { .wish-form { flex-direction: column; } }
-  .wish-form input {
+  .wish-form { display: flex; gap: 10px; max-width: 580px; margin: 0 auto 32px; align-items: flex-end; }
+  @media (max-width: 480px) { .wish-form { flex-direction: column; align-items: stretch; } }
+  .wish-fields { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .wish-form input, .wish-form textarea {
     flex: 1; padding: 14px 20px; border-radius: 50px; border: 1.5px solid #E4D8C6;
     background: var(--white); font-family: inherit; font-size: 0.9rem; outline: none;
     transition: border 0.3s, box-shadow 0.3s;
   }
-  .wish-form input:focus { border-color: var(--matcha); box-shadow: 0 0 0 5px rgba(138,154,91,0.14); }
+  .wish-form textarea { border-radius: 18px; resize: vertical; min-height: 90px; line-height: 1.5; }
+  .wish-form input:focus, .wish-form textarea:focus { border-color: var(--matcha); box-shadow: 0 0 0 5px rgba(138,154,91,0.14); }
   .wish-form button {
     padding: 14px 28px; border: none; border-radius: 50px; cursor: pointer;
     background: var(--grad-matcha); color: #fff; font-family: inherit; font-weight: 500;
     transition: transform 0.3s, box-shadow 0.3s; box-shadow: 0 10px 24px rgba(138,154,91,0.35);
+    white-space: nowrap;
   }
   .wish-form button:hover { transform: translateY(-3px); }
   .wish-form button:active { transform: scale(0.95); }
+  .wish-form button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
   .wish-list { max-width: 580px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
   .wish-item {
     background: var(--white); border-radius: 18px; padding: 16px 20px; box-shadow: 0 6px 18px rgba(58,46,42,0.07);
@@ -924,10 +928,14 @@
     <h2 class="section-title">Ucapan & Doa</h2>
     <p class="section-sub">Tinggalkan ucapan dan doa terbaik untuk kedua mempelai. 💐</p>
 
-    <div class="wish-form">
-      <input type="text" id="wishInput" placeholder="Tulis nama kamu...">
-      <button onclick="addWish()">Kirim 💌</button>
-    </div>
+    <form class="wish-form" id="wishForm" autocomplete="off">
+      <div class="wish-fields">
+        <input type="text" id="wishName1" placeholder="Nama kamu..." required maxlength="100">
+        <input type="text" id="wishName2" placeholder="Nama pasangan / keluarga (opsional)" maxlength="100">
+        <textarea id="wishMessage" placeholder="Tulis ucapan & doa kamu di sini..." required maxlength="1000"></textarea>
+      </div>
+      <button type="submit">Kirim 💌</button>
+    </form>
     <div class="wish-list" id="wishList"></div>
   </div>
 </section>
@@ -1208,33 +1216,69 @@ lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.
 
 /* ================= WISH ================= */
 const wishList = document.getElementById('wishList');
-const wishes = [
-  ['Ibu Nur Kholidah', 'Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. 🤲'],
-  ['Keluarga Supono', 'Selamat menempuh hidup baru, semoga selalu dalam lindungan Allah.'],
-  ['Teman Arief', 'Taqabbalallahu minna wa minkum, happy wedding bro! 🥳'],
-  ['Teman Shahana', 'Akhirnya! Selamat ya Sana, semoga langgeng sampai kakek nenek. 🍓']
-];
-function renderWishes() {
+const wishForm = document.getElementById('wishForm');
+const wishName1 = document.getElementById('wishName1');
+const wishName2 = document.getElementById('wishName2');
+const wishMessage = document.getElementById('wishMessage');
+
+async function loadWishes() {
+  try {
+    const res = await fetch('wishes.php');
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Gagal memuat ucapan');
+    renderWishes(data.wishes || []);
+  } catch (err) {
+    wishList.innerHTML = `<div class="wish-item">⚠️ Gagal memuat ucapan. Coba refresh.</div>`;
+  }
+}
+
+function renderWishes(wishes) {
   wishList.innerHTML = '';
-  wishes.slice().reverse().forEach(([n, t]) => {
+  wishes.forEach((w) => {
     const item = document.createElement('div');
     item.className = 'wish-item';
-    item.innerHTML = `<b>${escapeHtml(n)}</b> <span>— ${escapeHtml(t)}</span> <small>baru saja 💚</small>`;
+    const name = w.name2 ? `${escapeHtml(w.name1)} & ${escapeHtml(w.name2)}` : escapeHtml(w.name1);
+    const time = w.created_at ? formatTime(w.created_at) : 'baru saja 💚';
+    item.innerHTML = `<b>${name}</b> <span>— ${escapeHtml(w.message)}</span> <small>${time}</small>`;
     wishList.appendChild(item);
   });
 }
-function addWish() {
-  const input = document.getElementById('wishInput');
-  const name = input.value.trim() || 'Tamu Undangan';
-  wishes.push([name, 'Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. 🤲']);
-  input.value = '';
-  renderWishes();
+
+function formatTime(iso) {
+  const d = new Date(iso.replace(' ', 'T'));
+  if (isNaN(d)) return 'baru saja 💚';
+  return d.toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
+
+wishForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = wishForm.querySelector('button');
+  btn.disabled = true;
+  try {
+    const res = await fetch('wishes.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name1: wishName1.value.trim(),
+        name2: wishName2.value.trim(),
+        message: wishMessage.value.trim(),
+      }),
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Gagal mengirim ucapan');
+    wishForm.reset();
+    await loadWishes();
+  } catch (err) {
+    alert('Gagal mengirim ucapan. Coba lagi.');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
 function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  return String(str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
-document.getElementById('wishInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') addWish(); });
-renderWishes();
+loadWishes();
 
 /* ================= MUSIC ================= */
 const musicBtn = document.getElementById('musicBtn');
