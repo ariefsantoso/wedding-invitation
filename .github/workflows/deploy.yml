@@ -12,23 +12,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy static site via rsync
-        uses: burnett01/rsync-deployments@7.0.2
+      - name: Rsync to staging directory
+        uses: burnett01/rsync-deployments@8.0.3
         with:
           switches: -avz --delete --exclude '.git*' --exclude '.github' --exclude '.commandcode'
           path: ./
-          remote_path: /var/www/html
+          remote_path: /home/ubuntu/wedding-invitation
           remote_host: 13.212.112.223
           remote_user: ubuntu
           remote_key: ${{ secrets.SERVER_SSH_KEY }}
 
-      - name: Fix ownership and permissions
+      - name: Deploy to web root and fix permissions
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: 13.212.112.223
           username: ubuntu
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
+            sudo rsync -avz --delete /home/ubuntu/wedding-invitation/ /var/www/html/
             sudo chown -R www-data:www-data /var/www/html
             sudo chmod -R 755 /var/www/html
             echo "Deploy selesai $(date)"
