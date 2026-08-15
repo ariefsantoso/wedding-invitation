@@ -1,0 +1,12 @@
+# Private keys - jangan pernah commit
+*.ppk
+*.pem
+deploy_key
+deploy_key.pub
+id_rsa
+id_ed25519
+*.key
+
+# OS
+Thumbs.db
+.DS_Store
