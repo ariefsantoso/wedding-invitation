@@ -931,7 +931,6 @@
     <form class="wish-form" id="wishForm" autocomplete="off">
       <div class="wish-fields">
         <input type="text" id="wishName1" placeholder="Nama kamu..." required maxlength="100">
-        <input type="text" id="wishName2" placeholder="Nama pasangan / keluarga (opsional)" maxlength="100">
         <textarea id="wishMessage" placeholder="Tulis ucapan & doa kamu di sini..." required maxlength="1000"></textarea>
       </div>
       <button type="submit">Kirim 💌</button>
@@ -1218,7 +1217,6 @@ lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.
 const wishList = document.getElementById('wishList');
 const wishForm = document.getElementById('wishForm');
 const wishName1 = document.getElementById('wishName1');
-const wishName2 = document.getElementById('wishName2');
 const wishMessage = document.getElementById('wishMessage');
 
 async function loadWishes() {
@@ -1235,9 +1233,8 @@ async function loadWishes() {
 function createWishItem(w) {
   const item = document.createElement('div');
   item.className = 'wish-item';
-  const name = w.name2 ? `${escapeHtml(w.name1)} & ${escapeHtml(w.name2)}` : escapeHtml(w.name1);
   const time = w.created_at ? formatTime(w.created_at) : 'baru saja 💚';
-  item.innerHTML = `<b>${name}</b> <span>— ${escapeHtml(w.message)}</span> <small>${time}</small>`;
+  item.innerHTML = `<b>${escapeHtml(w.name1)}</b> <span>— ${escapeHtml(w.message)}</span> <small>${time}</small>`;
   return item;
 }
 
@@ -1256,20 +1253,19 @@ wishForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = wishForm.querySelector('button');
   const name1 = wishName1.value.trim();
-  const name2 = wishName2.value.trim();
   const message = wishMessage.value.trim();
   btn.disabled = true;
   try {
     const res = await fetch('wishes.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name1, name2, message }),
+      body: JSON.stringify({ name1, message }),
     });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || 'Gagal mengirim ucapan');
 
     // Tampilkan hasil insert langsung di atas daftar tanpa reload penuh
-    const fresh = createWishItem({ name1, name2, message, created_at: '' });
+    const fresh = createWishItem({ name1, message, created_at: '' });
     wishList.prepend(fresh);
     fresh.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
