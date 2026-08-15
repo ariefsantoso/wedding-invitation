@@ -1232,16 +1232,18 @@ async function loadWishes() {
   }
 }
 
+function createWishItem(w) {
+  const item = document.createElement('div');
+  item.className = 'wish-item';
+  const name = w.name2 ? `${escapeHtml(w.name1)} & ${escapeHtml(w.name2)}` : escapeHtml(w.name1);
+  const time = w.created_at ? formatTime(w.created_at) : 'baru saja 💚';
+  item.innerHTML = `<b>${name}</b> <span>— ${escapeHtml(w.message)}</span> <small>${time}</small>`;
+  return item;
+}
+
 function renderWishes(wishes) {
   wishList.innerHTML = '';
-  wishes.forEach((w) => {
-    const item = document.createElement('div');
-    item.className = 'wish-item';
-    const name = w.name2 ? `${escapeHtml(w.name1)} & ${escapeHtml(w.name2)}` : escapeHtml(w.name1);
-    const time = w.created_at ? formatTime(w.created_at) : 'baru saja 💚';
-    item.innerHTML = `<b>${name}</b> <span>— ${escapeHtml(w.message)}</span> <small>${time}</small>`;
-    wishList.appendChild(item);
-  });
+  wishes.forEach((w) => wishList.appendChild(createWishItem(w)));
 }
 
 function formatTime(iso) {
@@ -1253,21 +1255,29 @@ function formatTime(iso) {
 wishForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const btn = wishForm.querySelector('button');
+  const name1 = wishName1.value.trim();
+  const name2 = wishName2.value.trim();
+  const message = wishMessage.value.trim();
   btn.disabled = true;
   try {
     const res = await fetch('wishes.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name1: wishName1.value.trim(),
-        name2: wishName2.value.trim(),
-        message: wishMessage.value.trim(),
-      }),
+      body: JSON.stringify({ name1, name2, message }),
     });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || 'Gagal mengirim ucapan');
+
+    // Tampilkan hasil insert langsung di atas daftar tanpa reload penuh
+    const fresh = createWishItem({ name1, name2, message, created_at: '' });
+    wishList.prepend(fresh);
+    fresh.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
     wishForm.reset();
-    await loadWishes();
+    wishName1.focus();
+
+    // Sinkronkan dengan server (ambil daftar terbaru, termasuk ucapan dari tamu lain)
+    loadWishes();
   } catch (err) {
     alert('Gagal mengirim ucapan. Coba lagi.');
   } finally {
