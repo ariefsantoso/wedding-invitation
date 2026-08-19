@@ -271,9 +271,7 @@
         <h3>Photobooth Siap</h3>
         <p>Klik tombol di bawah untuk mengaktifkan kamera. Izinkan akses kamera saat browser meminta.</p>
         <button class="btn-start" id="btnStart">Aktifkan Kamera</button>
-        <button class="btn-ghost btn-alt" id="btnFileAlt">📷 Ambil dari Kamera</button>
-        <button class="btn-ghost btn-alt" id="btnGallery">🖼️ Upload dari Galeri</button>
-        <input type="file" id="fileInput" accept="image/*" capture="user" hidden>
+        <button class="btn-ghost btn-alt" id="btnGallery">🖼️ Ambil dari Galeri</button>
         <input type="file" id="galleryInput" accept="image/*" hidden>
         <p class="err-msg" id="camError"></p>
       </div>
@@ -325,7 +323,7 @@
     </div>
 
     <div class="foot-note">
-      💡 Akses kamera langsung hanya berfungsi lewat <b>HTTPS</b>. Kalau halaman dibuka lewat HTTP biasa, gunakan tombol <b>📷 Ambil dari Kamera</b> atau <b>🖼️ Upload dari Galeri</b>. Foto hanya diproses di perangkat kamu — tidak diunggah ke mana pun.
+      💡 Akses kamera langsung hanya berfungsi lewat <b>HTTPS</b>. Kalau halaman dibuka lewat HTTP biasa, gunakan tombol <b>🖼️ Ambil dari Galeri</b>. Foto hanya diproses di perangkat kamu — tidak diunggah ke mana pun.
     </div>
   </div>
 </main>
@@ -355,9 +353,7 @@ const video = document.getElementById('video');
 const camStage = document.getElementById('camStage');
 const startOverlay = document.getElementById('startOverlay');
 const btnStart = document.getElementById('btnStart');
-const btnFileAlt = document.getElementById('btnFileAlt');
 const btnGallery = document.getElementById('btnGallery');
-const fileInput = document.getElementById('fileInput');
 const galleryInput = document.getElementById('galleryInput');
 const btnShoot = document.getElementById('btnShoot');
 const btnRestart = document.getElementById('btnRestart');
@@ -745,15 +741,6 @@ function resetBooth() {
 btnStart.addEventListener('click', async () => {
   const ok = await startCamera();
   if (ok) btnRestart.disabled = false;
-});
-
-/* fallback kamera: tombol membuka file picker kamera, hasilnya dipakai sebagai foto */
-btnFileAlt.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', () => {
-  if (fileInput.files && fileInput.files[0]) {
-    handleFileShot(fileInput.files[0]);
-    fileInput.value = '';
-  }
 });
 
 /* upload dari galeri: file picker tanpa capture agar bisa pilih gambar dari galeri */
