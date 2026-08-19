@@ -189,6 +189,22 @@
   .foot-note { margin-top: 26px; text-align: center; font-size: 0.78rem; color: #9A8B82;
     background: rgba(255,255,255,0.6); border: 1px solid #EDE3D2; border-radius: 14px; padding: 14px 18px; }
 
+  /* ============ GALERI FOTO INDIVIDUAL ============ */
+  .single-gallery { margin-top: 26px; }
+  .single-gallery h4 { font-family: 'Great Vibes', cursive; font-size: 1.7rem; color: var(--matcha-deep); }
+  .single-gallery .hint { font-size: 0.8rem; color: var(--choco-soft); margin: 2px 0 14px; }
+  .single-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .single-item { background: var(--white); border-radius: 14px; padding: 8px; box-shadow: var(--shadow);
+    transition: transform 0.3s; }
+  .single-item:hover { transform: translateY(-3px); }
+  .single-item img { width: 100%; display: block; border-radius: 8px; aspect-ratio: 2/1; object-fit: cover; }
+  .single-item .btn-save { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;
+    margin-top: 8px; padding: 8px 0; border: none; border-radius: 50px; cursor: pointer;
+    background: var(--matcha-mist); color: var(--matcha-deep); font-family: inherit; font-size: 0.74rem; font-weight: 500;
+    transition: background 0.3s, color 0.3s, transform 0.3s; }
+  .single-item .btn-save:hover { background: var(--grad-matcha); color: #fff; transform: translateY(-2px); }
+  .single-item .btn-save:active { transform: scale(0.95); }
+
   /* ============ TOAST ============ */
   .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px);
     background: var(--choco); color: var(--cream); padding: 13px 26px; border-radius: 50px;
@@ -294,6 +310,13 @@
           </button>
         </div>
       </div>
+
+      <!-- galeri foto individual: unduh per foto -->
+      <div class="single-gallery" id="singleGallery" hidden>
+        <h4>Foto Kamu 📸</h4>
+        <p class="hint">Unduh foto satu per satu — tanpa template strip.</p>
+        <div class="single-grid" id="singleGrid"></div>
+      </div>
     </div>
 
     <div class="foot-note">
@@ -342,6 +365,8 @@ const result = document.getElementById('result');
 const stripImg = document.getElementById('stripImg');
 const btnDownload = document.getElementById('btnDownload');
 const btnRetake = document.getElementById('btnRetake');
+const singleGallery = document.getElementById('singleGallery');
+const singleGrid = document.getElementById('singleGrid');
 
 let stream = null;
 let shots = [];           // array of canvas (hasil capture)
@@ -534,8 +559,42 @@ async function finishBooth() {
   await document.fonts.ready;
   const stripUrl = composeStrip();
   stripImg.src = stripUrl;
+  renderSingleGallery();
   result.classList.add('show');
   statusEl.textContent = 'Selamat! Foto strip kamu sudah jadi 🥳';
+}
+
+/* galeri foto individual (tanpa template) — tiap foto bisa diunduh sendiri */
+function renderSingleGallery() {
+  singleGrid.innerHTML = '';
+  shots.forEach((shot, idx) => {
+    const item = document.createElement('div');
+    item.className = 'single-item';
+
+    const img = document.createElement('img');
+    img.src = shot.toDataURL('image/jpeg', 0.85);
+    img.alt = 'Foto ' + (idx + 1);
+    item.appendChild(img);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-save';
+    btn.type = 'button';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Unduh Foto ' + (idx + 1);
+    btn.addEventListener('click', () => downloadShot(shot, idx));
+    item.appendChild(btn);
+
+    singleGrid.appendChild(item);
+  });
+  singleGallery.hidden = false;
+}
+
+function downloadShot(shot, idx) {
+  const a = document.createElement('a');
+  a.href = shot.toDataURL('image/jpeg', 0.9);
+  a.download = 'foto-' + (idx + 1) + '-arief-shahana.jpg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 function composeStrip() {
@@ -657,6 +716,8 @@ function resetBooth() {
   shots = [];
   stopCamera();
   result.classList.remove('show');
+  singleGallery.hidden = true;
+  singleGrid.innerHTML = '';
   slots.forEach(s => { s.classList.remove('filled'); s.innerHTML = s.textContent; });
   statusEl.textContent = 'Klik tombol untuk memulai photobooth 📸';
   startOverlay.style.display = 'flex';
