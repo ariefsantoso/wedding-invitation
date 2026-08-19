@@ -828,21 +828,19 @@ function dataURLtoFile(dataUrl, filename) {
   return new File([u8arr], filename, { type: mime });
 }
 
-/* Share ke WhatsApp menyertakan foto strip (Web Share API).
-   Fallback: buka WhatsApp + ingatkan simpan foto dulu. */
+/* Share ke WhatsApp menyertakan foto strip (Web Share API), tanpa teks.
+   Fallback: instruksi simpan foto dulu. */
 btnShareWa.addEventListener('click', async () => {
   if (!stripImg.src) { showToast('Foto strip belum tersedia.'); return; }
-  const text = 'Foto strip undangan Arief & Shahana 🍓💚 — lihat di photobooth kami!';
   const file = dataURLtoFile(stripImg.src, 'photo-strip-arief-shahana-07-11-2026.png');
   try {
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], text });
+      await navigator.share({ files: [file] });
       return;
     }
     throw new Error('unsupported');
   } catch (e) {
     if (e && e.name === 'AbortError') return; // user batal
-    window.open('https://api.whatsapp.com/send/?text=' + encodeURIComponent(text), '_blank');
     showToast('💡 Simpan foto strip terlebih dahulu, lalu unggah ke Status/Story WhatsApp kamu.');
   }
 });
