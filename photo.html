@@ -122,7 +122,8 @@
 
   /* start overlay */
   .start-overlay { position: absolute; inset: 0; z-index: 7; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 7px; text-align: center; padding: 8px; background: linear-gradient(160deg, rgba(70,84,46,0.85), rgba(196,58,68,0.85)); backdrop-filter: blur(4px); }
+    gap: 7px; text-align: center; padding: 8px; overflow-y: auto;
+    background: linear-gradient(160deg, rgba(70,84,46,0.85), rgba(196,58,68,0.85)); backdrop-filter: blur(4px); }
   .start-overlay .cam-icon { font-size: 2.1rem; animation: sway 3s ease-in-out infinite; }
   .start-overlay h3 { font-family: 'Great Vibes', cursive; font-size: 1.5rem; color: var(--cream); line-height: 1.2; }
   .start-overlay p { font-size: 0.72rem; color: rgba(251,247,238,0.85); max-width: 250px; line-height: 1.5; }
@@ -223,6 +224,17 @@
     .controls { gap: 12px; }
     .result-actions { flex-direction: column; }
     .share-group { flex-basis: auto; }
+
+    /* overlay awal: kompak supaya semua tombol (termasuk galeri) terlihat di layar pendek */
+    .start-overlay { gap: 4px; padding: 6px; }
+    .start-overlay .cam-icon { font-size: 1.4rem; }
+    .start-overlay h3 { font-size: 1.15rem; }
+    .start-overlay p { font-size: 0.64rem; line-height: 1.35; max-width: 220px; }
+    .btn-start { padding: 8px 22px; font-size: 0.82rem; }
+    .btn-alt { margin-top: 3px; padding: 7px 18px; font-size: 0.74rem; }
+
+    /* stage lebih tinggi di mobile agar semua tombol muat tanpa scroll */
+    .cam-stage { aspect-ratio: auto; height: 300px; }
   }
 </style>
 </head>
