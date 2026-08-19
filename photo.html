@@ -147,6 +147,8 @@
   .btn-ghost:hover { transform: translateY(-2px); border-color: var(--matcha); color: var(--matcha-deep); }
   .btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
   .btn-alt { margin-top: 8px; padding: 9px 22px; font-size: 0.8rem; }
+  .btn-flip { width: 46px; height: 46px; padding: 0; border-radius: 50%; font-size: 1.1rem;
+    display: inline-flex; align-items: center; justify-content: center; }
 
   /* progress slots */
   .slots { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
@@ -277,6 +279,7 @@
 
     <!-- kontrol -->
     <div class="controls" id="controls" style="display:none;">
+      <button class="btn-ghost btn-flip" id="btnFlip" title="Ganti kamera depan/belakang" aria-label="Ganti kamera">🔄</button>
       <button class="shoot-btn" id="btnShoot" title="Ambil foto" aria-label="Ambil foto"><span class="inner"></span></button>
       <button class="btn-ghost" id="btnRestart" disabled>↺ Ulang Semua</button>
     </div>
@@ -371,6 +374,7 @@ const singleGrid = document.getElementById('singleGrid');
 let stream = null;
 let shots = [];           // array of canvas (hasil capture)
 let shooting = false;
+let useBackCamera = false;
 const MAX_SHOTS = 3;
 const SHOT_W = 1080, SHOT_H = 540; // rasio 2:1 (foto full-width di strip)
 
@@ -407,9 +411,17 @@ async function startCamera() {
     return false;
   }
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 960 } }, audio: false });
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: useBackCamera ? 'environment' : 'user',
+        width: { ideal: 1280 }, height: { ideal: 960 }
+      },
+      audio: false
+    });
     video.srcObject = stream;
     await video.play().catch(() => {});
+    // Kamera belakang tidak perlu mirror; kamera depan tetap mirror seperti preview
+    video.style.transform = useBackCamera ? 'none' : 'scaleX(-1)';
     startOverlay.style.display = 'none';
     controls.style.display = 'flex';
     statusEl.textContent = 'Siap! Tekan tombol tengah untuk mengambil foto 📸';
@@ -488,7 +500,7 @@ function captureShot() {
   c.width = SHOT_W; c.height = SHOT_H;
   const ctx = c.getContext('2d');
   ctx.save();
-  ctx.translate(SHOT_W, 0); ctx.scale(-1, 1); // mirror agar sama dengan preview
+  if (!useBackCamera) { ctx.translate(SHOT_W, 0); ctx.scale(-1, 1); } // mirror kamera depan agar sama dengan preview
   ctx.drawImage(video, sx, sy, sw, sh, 0, 0, SHOT_W, SHOT_H);
   ctx.restore();
   return c;
@@ -742,6 +754,15 @@ fileInput.addEventListener('change', () => {
 
 btnShoot.addEventListener('click', doShoot);
 
+/* ganti kamera depan/belakang */
+const btnFlip = document.getElementById('btnFlip');
+btnFlip.addEventListener('click', async () => {
+  useBackCamera = !useBackCamera;
+  stopCamera();
+  const ok = await startCamera();
+  if (!ok) { useBackCamera = !useBackCamera; startCamera(); }
+});
+
 btnRestart.addEventListener('click', () => {
   resetBooth();
   startCamera();
@@ -782,14 +803,36 @@ btnShareIg.addEventListener('click', () => {
   showToast('💡 Simpan foto strip terlebih dahulu, lalu unggah ke Story Instagram kamu.');
 });
 
-/* ================= SHARE KE WHATSAPP STORY ================= */
+/* ================= SHARE KE WHATSAPP ================= */
 const btnShareWa = document.getElementById('btnShareWa');
-btnShareWa.addEventListener('click', () => {
+
+function dataURLtoFile(dataUrl, filename) {
+  const arr = dataUrl.split(',');
+  const mime = (arr[0].match(/:(.*?);/) || [])[1] || 'image/png';
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) u8arr[n] = bstr.charCodeAt(n);
+  return new File([u8arr], filename, { type: mime });
+}
+
+/* Share ke WhatsApp menyertakan foto strip (Web Share API).
+   Fallback: buka WhatsApp + ingatkan simpan foto dulu. */
+btnShareWa.addEventListener('click', async () => {
   if (!stripImg.src) { showToast('Foto strip belum tersedia.'); return; }
-  /* WhatsApp Story (status) juga tidak bisa menerima file langsung dari URL browser,
-     jadi buka status WA dan ingatkan menyimpan foto terlebih dahulu. */
-  window.open('https://api.whatsapp.com/send/?text=' + encodeURIComponent('Foto strip undangan Arief & Shahana 🍓💚 — lihat di photobooth kami!'), '_blank');
-  showToast('💡 Simpan foto strip terlebih dahulu, lalu unggah ke Status/Story WhatsApp kamu.');
+  const text = 'Foto strip undangan Arief & Shahana 🍓💚 — lihat di photobooth kami!';
+  const file = dataURLtoFile(stripImg.src, 'photo-strip-arief-shahana-07-11-2026.png');
+  try {
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], text });
+      return;
+    }
+    throw new Error('unsupported');
+  } catch (e) {
+    if (e && e.name === 'AbortError') return; // user batal
+    window.open('https://api.whatsapp.com/send/?text=' + encodeURIComponent(text), '_blank');
+    showToast('💡 Simpan foto strip terlebih dahulu, lalu unggah ke Status/Story WhatsApp kamu.');
+  }
 });
 </script>
 </body>
