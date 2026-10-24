@@ -784,7 +784,7 @@
         <div class="cd-box"><div class="cd-num" id="cdMins">00</div><div class="cd-unit">Menit</div></div>
         <div class="cd-box"><div class="cd-num" id="cdSecs">00</div><div class="cd-unit">Detik</div></div>
       </div>
-      <p class="countdown-note">Sabtu, 7 November 2026 • 08.00 WIB</p>
+      <p class="countdown-note">Sabtu, 7 November 2026 • 10.00 WIB</p>
       <button class="btn-calendar" onclick="addToCalendar()">📅 Simpan Tanggal</button>
     </div>
   </div>
@@ -854,7 +854,7 @@
       <div class="event-icon">🎉</div>
       <h3>Resepsi</h3>
       <p class="event-date">Sabtu, 7 November 2026</p>
-      <p class="event-time">Rilex</p>
+      <p class="event-time">Pukul 10.00 WIB</p>
       <div class="event-place">
         <strong>Dusun Jetak, Desa Sidokerto</strong>
         <span>Kecamatan Mojowarno, Kabupaten Jombang, Jawa Timur</span>
@@ -1107,7 +1107,7 @@ for (let i = 0; i < 24; i++) makePetal();
 for (let i = 0; i < 12; i++) makeBubble();
 
 /* ================= COUNTDOWN ================= */
-const targetDate = new Date('2026-11-07T08:00:00+07:00').getTime();
+const targetDate = new Date('2026-11-07T10:00:00+07:00').getTime();
 const cdEls = { d: document.getElementById('cdDays'), h: document.getElementById('cdHours'), m: document.getElementById('cdMins'), s: document.getElementById('cdSecs') };
 let lastVals = { d: null, h: null, m: null, s: null };
 function updateCountdown() {
@@ -1133,7 +1133,7 @@ setInterval(updateCountdown, 1000);
 
 /* ================= CALENDAR ================= */
 function addToCalendar() {
-  const start = new Date('2026-11-07T08:00:00+07:00');
+  const start = new Date('2026-11-07T10:00:00+07:00');
   const end = new Date('2026-11-07T14:00:00+07:00');
   const fmt = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
